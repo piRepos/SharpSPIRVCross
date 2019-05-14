@@ -12,7 +12,7 @@ namespace SharpSPIRVCross.Tests
             using (var context = new Context())
             {
                 Assert.NotNull(context);
-                //context.ParseIr();
+                context.ParseIr(bytecode);
             }
         }
     }

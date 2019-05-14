@@ -35,6 +35,6 @@ namespace SharpSPIRVCross
         public static extern void spvc_context_release_allocations(IntPtr context);
 
         [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
-        public static extern spvc_result spvc_context_parse_spirv(IntPtr context, uint* spirv, IntPtr word_count, out IntPtr parsed_ir);
+        public static extern spvc_result spvc_context_parse_spirv(IntPtr context, byte* spirv, IntPtr word_count, out IntPtr parsed_ir);
     }
 }

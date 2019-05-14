@@ -23,13 +23,13 @@ namespace SharpSPIRVCross
             spvc_context_destroy(_context);
         }
 
-        public ParseIr ParseIr(uint[] spirv)
+        public ParseIr ParseIr(byte[] spirv)
         {
             unsafe
             {
                 var result = spvc_context_parse_spirv(_context,
-                    (uint*)Unsafe.AsPointer(ref spirv[0]),
-                    new IntPtr(spirv.Length),
+                    (byte*)Unsafe.AsPointer(ref spirv[0]),
+                    new IntPtr(spirv.Length / 4),
                     out var parsed_ir);
                 return new ParseIr(parsed_ir);
             }

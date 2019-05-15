@@ -12,7 +12,14 @@ namespace SharpSPIRVCross.Tests
             using (var context = new Context())
             {
                 Assert.NotNull(context);
-                context.ParseIr(bytecode);
+                var ir = context.ParseIr(bytecode);
+                var compiler = context.CreateCompiler(Backend.HLSL, ir);
+
+                var resources = compiler.CreateShaderResources();
+                var ss = resources.GetResources(ResourceType.UniformBuffer);
+
+                compiler.Options.SetOption(CompilerOption.HLSL_ShaderModel, 50);
+                var hlsl_source = compiler.Compile();
             }
         }
     }

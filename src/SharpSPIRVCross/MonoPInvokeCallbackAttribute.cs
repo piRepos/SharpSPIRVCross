@@ -5,13 +5,14 @@ using System;
 
 namespace SharpSPIRVCross
 {
-    public sealed class ParseIr 
+    [AttributeUsage(AttributeTargets.Method)]
+    public sealed class MonoPInvokeCallbackAttribute : Attribute
     {
-        public readonly IntPtr Handle;
+        public Type Type { get; }
 
-        internal ParseIr(IntPtr handle)
+        public MonoPInvokeCallbackAttribute(Type type)
         {
-            Handle = handle;
+            Type = type;
         }
     }
 }

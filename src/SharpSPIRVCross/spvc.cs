@@ -66,6 +66,15 @@ namespace SharpSPIRVCross
         public static extern Result spvc_compiler_flatten_buffer_block(spvc_compiler compiler, spvc_variable_id id);
 
         [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        public static extern Result spvc_compiler_hlsl_set_root_constants_layout(spvc_compiler compiler, HLSLRootConstants* constant_info, IntPtr count);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        public static extern Result spvc_compiler_hlsl_add_vertex_attribute_remap(spvc_compiler compiler, HLSLVertexAttributeRemap.__Native* remap, IntPtr remaps);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        public static extern spvc_variable_id spvc_compiler_hlsl_remap_num_workgroups_builtin(spvc_compiler compiler);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
         public static extern Result spvc_compiler_get_active_interface_variables(spvc_compiler compiler, out spvc_set set);
 
         [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]

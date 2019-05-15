@@ -88,5 +88,75 @@ namespace SharpSPIRVCross
             spvc_compiler_create_shader_resources(Handle, out var resourcesPtr).CheckError();
             return new ShaderResources(resourcesPtr);
         }
+
+        public void SetDecoration(uint id, SpvDecoration decoration, uint argument)
+        {
+            spvc_compiler_set_decoration(Handle, id, decoration, argument);
+        }
+
+        public void SetDecoration(uint id, SpvDecoration decoration, string argument)
+        {
+            spvc_compiler_set_decoration_string(Handle, id, decoration, argument);
+        }
+
+        public void SetName(uint id, string argument)
+        {
+            spvc_compiler_set_name(Handle, id, argument);
+        }
+
+        public void SetMemberDecoration(uint id, uint memberIndex, SpvDecoration decoration, uint argument)
+        {
+            spvc_compiler_set_member_decoration(Handle, id, memberIndex, decoration, argument);
+        }
+
+        public void SetMemberDecoration(uint id, uint memberIndex, SpvDecoration decoration, string argument)
+        {
+            spvc_compiler_set_member_decoration_string(Handle, id, memberIndex, decoration, argument);
+        }
+
+        public void UnsetDecoration(uint id, SpvDecoration decoration)
+        {
+            spvc_compiler_unset_decoration(Handle, id, decoration);
+        }
+
+        public void UnsetMemberDecoration(uint id, uint memberIndex, SpvDecoration decoration)
+        {
+            spvc_compiler_unset_member_decoration(Handle, id, memberIndex, decoration);
+        }
+
+        public bool HasDecoration(uint id, SpvDecoration decoration)
+        {
+            return spvc_compiler_has_decoration(Handle, id, decoration) == 1;
+        }
+
+        public bool HasMemberDecoration(uint id, uint memberIndex, SpvDecoration decoration)
+        {
+            return spvc_compiler_has_member_decoration(Handle, id, memberIndex, decoration) == 1;
+        }
+
+        public string GetName(uint id)
+        {
+            return Marshal.PtrToStringAnsi(spvc_compiler_get_name(Handle, id));
+        }
+
+        public uint GetDecoration(uint id, SpvDecoration decoration)
+        {
+            return spvc_compiler_get_decoration(Handle, id, decoration);
+        }
+
+        public string GetDecorationString(uint id, SpvDecoration decoration)
+        {
+            return Marshal.PtrToStringAnsi(spvc_compiler_get_decoration_string(Handle, id, decoration));
+        }
+
+        public uint GetMemberDecoration(uint id, uint memberIndex, SpvDecoration decoration)
+        {
+            return spvc_compiler_get_member_decoration(Handle, id, memberIndex, decoration);
+        }
+
+        public string GetMemberDecorationString(uint id, uint memberIndex, SpvDecoration decoration)
+        {
+            return Marshal.PtrToStringAnsi(spvc_compiler_get_member_decoration_string(Handle, id, memberIndex, decoration));
+        }
     }
 }

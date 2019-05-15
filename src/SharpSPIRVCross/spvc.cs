@@ -92,5 +92,51 @@ namespace SharpSPIRVCross
             ResourceType resourceType,
             ReflectedResource.__Native** resource_list,
             out IntPtr resource_size);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void spvc_compiler_set_decoration(spvc_compiler compiler, uint id, SpvDecoration decoration, uint argument);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void spvc_compiler_set_decoration_string(spvc_compiler compiler, uint id, SpvDecoration decoration, string argument);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void spvc_compiler_set_name(spvc_compiler compiler, uint id, string argument);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void spvc_compiler_set_member_decoration(spvc_compiler compiler, uint id, uint member_index,
+                                                         SpvDecoration decoration, uint argument);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void spvc_compiler_set_member_decoration_string(spvc_compiler compiler, uint id, uint member_index,
+                                                         SpvDecoration decoration, string argument);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void spvc_compiler_unset_decoration(spvc_compiler compiler, uint id, SpvDecoration decoration);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void spvc_compiler_unset_member_decoration(spvc_compiler compiler, uint id,
+                                                           uint member_index, SpvDecoration decoration);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte spvc_compiler_has_decoration(spvc_compiler compiler, uint id, SpvDecoration decoration);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte spvc_compiler_has_member_decoration(spvc_compiler compiler, uint id,
+                                                              uint member_index, SpvDecoration decoration);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr spvc_compiler_get_name(spvc_compiler compiler, uint id);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        public static extern uint spvc_compiler_get_decoration(spvc_compiler compiler, uint id, SpvDecoration decoration);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr spvc_compiler_get_decoration_string(spvc_compiler compiler, uint id, SpvDecoration decoration);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        public static extern uint spvc_compiler_get_member_decoration(spvc_compiler compiler, uint id, uint memberIndex, SpvDecoration decoration);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr spvc_compiler_get_member_decoration_string(spvc_compiler compiler, uint id, uint memberIndex, SpvDecoration decoration);
     }
 }

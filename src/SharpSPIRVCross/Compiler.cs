@@ -126,12 +126,12 @@ namespace SharpSPIRVCross
 
         public bool HasDecoration(uint id, SpvDecoration decoration)
         {
-            return spvc_compiler_has_decoration(Handle, id, decoration) == 1;
+            return spvc_compiler_has_decoration(Handle, id, decoration);
         }
 
         public bool HasMemberDecoration(uint id, uint memberIndex, SpvDecoration decoration)
         {
-            return spvc_compiler_has_member_decoration(Handle, id, memberIndex, decoration) == 1;
+            return spvc_compiler_has_member_decoration(Handle, id, memberIndex, decoration);
         }
 
         public string GetName(uint id)
@@ -157,6 +157,43 @@ namespace SharpSPIRVCross
         public string GetMemberDecorationString(uint id, uint memberIndex, SpvDecoration decoration)
         {
             return Marshal.PtrToStringAnsi(spvc_compiler_get_member_decoration_string(Handle, id, memberIndex, decoration));
+        }
+
+        public uint buildDummySamplerForCombinedImages()
+        {
+            spvc_compiler_build_dummy_sampler_for_combined_images(Handle, out var id).CheckError();
+            return id;
+        }
+
+        public void buildCombinedImageSamplers()
+        {
+            spvc_compiler_build_combined_image_samplers(Handle).CheckError();
+        }
+
+        public CombinedImageSampler[] GetCombinedImageSamplers()
+        {
+            unsafe
+            {
+                // Get size first.
+                CombinedImageSampler* samplers_ptr;
+                spvc_compiler_get_combined_image_samplers(Handle, 
+                    &samplers_ptr,
+                    out var num_samplers).CheckError();
+
+                var samplers = new CombinedImageSampler[num_samplers.ToInt32()];
+
+                for (int i = 0; i < samplers.Length; i++)
+                {
+                    samplers[i] = new CombinedImageSampler
+                    {
+                        CombinedId = samplers_ptr[i].CombinedId,
+                        ImageId = samplers_ptr[i].ImageId,
+                        SamplerId = samplers_ptr[i].SamplerId
+                    };
+                }
+
+                return samplers;
+            }
         }
     }
 }

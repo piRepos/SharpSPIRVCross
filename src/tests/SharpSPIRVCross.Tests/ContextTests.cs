@@ -25,6 +25,13 @@ namespace SharpSPIRVCross.Tests
                     Console.WriteLine($"  Set: {set}, Binding: {binding}");
                 }
 
+                foreach (var input in resources.GetResources(ResourceType.StageInput))
+                {
+                    Console.WriteLine($"ID: {input.Id}, BaseTypeID: {input.BaseTypeId}, TypeID: {input.Id}, Name: {input.Name})");
+                    var location = compiler.GetDecoration(input.Id, SpvDecoration.Location);
+                    Console.WriteLine($"  Location: {location}");
+                }
+
                 compiler.Options.SetOption(CompilerOption.HLSL_ShaderModel, 50);
                 var hlsl_source = compiler.Compile();
             }

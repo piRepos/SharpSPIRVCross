@@ -19,7 +19,7 @@ namespace SharpSPIRVCross
 
         public void SetOption(CompilerOption option, bool value)
         {
-            spvc_compiler_options_set_bool(Handle, option, value ? (byte)1 : (byte)0);
+            spvc_compiler_options_set_bool(Handle, option, value);
             IsDirty = true;
         }
 

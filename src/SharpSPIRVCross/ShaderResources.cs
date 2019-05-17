@@ -23,9 +23,9 @@ namespace SharpSPIRVCross
             {
                 // Get size first.
                 ReflectedResource.__Native* resource_list_ptr;
-                var result = spvc_resources_get_resource_list_for_type(Handle, resourceType,
+                spvc_resources_get_resource_list_for_type(Handle, resourceType,
                     &resource_list_ptr,
-                    out var resource_size);
+                    out var resource_size).CheckError();
 
                 var resourceList = new ReflectedResource[resource_size.ToInt32()];
 

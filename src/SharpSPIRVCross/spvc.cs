@@ -8,7 +8,7 @@ using spvc_compiler = System.IntPtr;
 using spvc_compiler_options = System.IntPtr;
 using spvc_variable_id = System.UInt32;
 using spvc_resources = System.IntPtr;
-
+using spvc_type_id = System.UInt32;
 using spvc_set = System.IntPtr;
 
 namespace SharpSPIRVCross
@@ -135,6 +135,9 @@ namespace SharpSPIRVCross
                                                          SpvDecoration decoration, string argument);
 
         [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void spvc_compiler_set_member_name(spvc_compiler compiler, uint id, uint member_index, string argument);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
         public static extern void spvc_compiler_unset_decoration(spvc_compiler compiler, uint id, SpvDecoration decoration);
 
         [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
@@ -175,5 +178,7 @@ namespace SharpSPIRVCross
         public static extern Result spvc_compiler_get_combined_image_samplers(spvc_compiler compiler, 
             CombinedImageSampler** samplers,
             out IntPtr num_samplers);
+
+        
     }
 }

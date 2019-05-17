@@ -21,7 +21,6 @@ namespace SharpSPIRVCross
         {
             unsafe
             {
-                // Get size first.
                 ReflectedResource.__Native* resource_list_ptr;
                 spvc_resources_get_resource_list_for_type(Handle, resourceType,
                     &resource_list_ptr,

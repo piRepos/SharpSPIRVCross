@@ -14,12 +14,15 @@ namespace SharpSPIRVCross
 
         public readonly CompilerOptions Options;
 
+        public readonly SpvExecutionModel ExecutionModel;
+
         internal Compiler(IntPtr handle)
         {
             Handle = handle;
 
             spvc_compiler_create_compiler_options(handle, out var optionsPtr).CheckError();
             Options = new CompilerOptions(optionsPtr);
+            ExecutionModel = spvc_compiler_get_execution_model(handle);
         }
 
         public string Compile()
@@ -114,6 +117,11 @@ namespace SharpSPIRVCross
             spvc_compiler_set_member_decoration_string(Handle, id, memberIndex, decoration, argument);
         }
 
+        public void SetMemberName(uint id, uint memberIndex, string argument)
+        {
+            spvc_compiler_set_member_name(Handle, id, memberIndex, argument);
+        }
+
         public void UnsetDecoration(uint id, SpvDecoration decoration)
         {
             spvc_compiler_unset_decoration(Handle, id, decoration);
@@ -159,13 +167,13 @@ namespace SharpSPIRVCross
             return Marshal.PtrToStringAnsi(spvc_compiler_get_member_decoration_string(Handle, id, memberIndex, decoration));
         }
 
-        public uint buildDummySamplerForCombinedImages()
+        public uint BuildDummySamplerForCombinedImages()
         {
             spvc_compiler_build_dummy_sampler_for_combined_images(Handle, out var id).CheckError();
             return id;
         }
 
-        public void buildCombinedImageSamplers()
+        public void BuildCombinedImageSamplers()
         {
             spvc_compiler_build_combined_image_samplers(Handle).CheckError();
         }
@@ -174,9 +182,8 @@ namespace SharpSPIRVCross
         {
             unsafe
             {
-                // Get size first.
                 CombinedImageSampler* samplers_ptr;
-                spvc_compiler_get_combined_image_samplers(Handle, 
+                spvc_compiler_get_combined_image_samplers(Handle,
                     &samplers_ptr,
                     out var num_samplers).CheckError();
 
@@ -195,5 +202,165 @@ namespace SharpSPIRVCross
                 return samplers;
             }
         }
+
+        public SpirvType GetSpirvType(uint id)
+        {
+            var handle = spvc_compiler_get_type_handle(Handle, id);
+            if (handle == IntPtr.Zero)
+                return null;
+
+            return new SpirvType(this, handle);
+        }
+
+        public bool GetBinaryOffsetForDecoration(uint id, SpvDecoration decoration, out uint wordOffset)
+        {
+            return spvc_compiler_get_binary_offset_for_decoration(Handle, id, decoration, out wordOffset);
+        }
+
+        public bool BufferIsHlslCounterBuffer(uint id)
+        {
+            return spvc_compiler_buffer_is_hlsl_counter_buffer(Handle, id);
+        }
+
+        public bool BufferGetHlslCounterBuffer(uint id, out uint counterId)
+        {
+            return spvc_compiler_buffer_get_hlsl_counter_buffer(Handle, id, out counterId);
+        }
+
+        public SpvCapability[] GetDeclaredCapabilities()
+        {
+            unsafe
+            {
+                SpvCapability* capabilities_ptr;
+                spvc_compiler_get_declared_capabilities(Handle,
+                    &capabilities_ptr,
+                    out var num_capabilities).CheckError();
+
+                var capabilities = new SpvCapability[num_capabilities.ToInt32()];
+
+                for (int i = 0; i < capabilities.Length; i++)
+                {
+                    capabilities[i] = capabilities_ptr[i];
+                }
+
+                return capabilities;
+            }
+        }
+
+        public string[] GetDeclaredExtensions()
+        {
+            unsafe
+            {
+                IntPtr* extensions_ptr;
+                spvc_compiler_get_declared_extensions(Handle,
+                    &extensions_ptr,
+                    out var num_extensions).CheckError();
+
+                var extensions = new string[num_extensions.ToInt32()];
+
+                for (int i = 0; i < extensions.Length; i++)
+                {
+                    extensions[i] = Marshal.PtrToStringAnsi(extensions_ptr[i]);
+                }
+
+                return extensions;
+            }
+        }
+
+        public string GetRemappedDeclaredBlockName(uint id)
+        {
+            return Marshal.PtrToStringAnsi(spvc_compiler_get_remapped_declared_block_name(Handle, id));
+        }
+
+        public SpvDecoration[] GetBufferBlockDecorations(uint id)
+        {
+            unsafe
+            {
+                SpvDecoration* decorations_ptr;
+                spvc_compiler_get_buffer_block_decorations(Handle,
+                    id,
+                    &decorations_ptr,
+                    out var num_decorations).CheckError();
+
+                var decorations = new SpvDecoration[num_decorations.ToInt32()];
+
+                for (int i = 0; i < decorations.Length; i++)
+                {
+                    decorations[i] = decorations_ptr[i];
+                }
+
+                return decorations;
+            }
+        }
+
+        public bool GetDeclaredStructSize(SpirvType structType, out int size)
+        {
+            if (spvc_compiler_get_declared_struct_size(Handle, structType.Handle, out IntPtr size_ptr) != Result.Success)
+            {
+                size = 0;
+                return false;
+            }
+
+            size = size_ptr.ToInt32();
+            return true;
+        }
+
+        public bool GetStructMemberOffset(SpirvType type, int index, out int offset)
+        {
+            return spvc_compiler_type_struct_member_offset(Handle, type.Handle, index, out offset) == Result.Success;
+        }
+
+        public bool GetStructMemberArrayStride(SpirvType type, int index, out int stride)
+        {
+            return spvc_compiler_type_struct_member_array_stride(Handle, type.Handle, index, out stride) == Result.Success;
+        }
+
+        public bool GetStructMemberMatrixStride(SpirvType type, int index, out int stride)
+        {
+            return spvc_compiler_type_struct_member_matrix_stride(Handle, type.Handle, index, out stride) == Result.Success;
+        }
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr spvc_compiler_get_type_handle(IntPtr compiler, uint id);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        private static extern SpvExecutionModel spvc_compiler_get_execution_model(IntPtr compiler);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        private static extern bool spvc_compiler_get_binary_offset_for_decoration(IntPtr compiler, uint id, SpvDecoration decoration, out uint word_offset);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        private static extern bool spvc_compiler_buffer_is_hlsl_counter_buffer(IntPtr compiler, uint id);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        private static extern bool spvc_compiler_buffer_get_hlsl_counter_buffer(IntPtr compiler, uint id, out uint counter_id);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        private static unsafe extern Result spvc_compiler_get_declared_capabilities(IntPtr compiler, SpvCapability** capabilities, out IntPtr num_capabilities);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        private static unsafe extern Result spvc_compiler_get_declared_extensions(IntPtr compiler, IntPtr** extensions, out IntPtr num_extensions);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        private static unsafe extern IntPtr spvc_compiler_get_remapped_declared_block_name(IntPtr compiler, uint id);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        private static unsafe extern Result spvc_compiler_get_buffer_block_decorations(IntPtr compiler, uint id, SpvDecoration** decorations, out IntPtr num_decorations);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        private static unsafe extern Result spvc_compiler_get_declared_struct_size(IntPtr compiler, IntPtr struct_type, out IntPtr size);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        private static unsafe extern Result spvc_compiler_type_struct_member_offset(IntPtr compiler, IntPtr type, int index, out int offset);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        private static unsafe extern Result spvc_compiler_type_struct_member_array_stride(IntPtr compiler, IntPtr type, int index, out int stride);
+
+        [DllImport("cspirv_cross", CallingConvention = CallingConvention.Cdecl)]
+        private static unsafe extern Result spvc_compiler_type_struct_member_matrix_stride(IntPtr compiler, IntPtr type, int index, out int stride);
+
     }
 }

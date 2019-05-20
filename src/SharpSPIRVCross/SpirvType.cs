@@ -36,8 +36,7 @@ namespace SharpSPIRVCross
             Handle = handle;
             BaseType = spvc_type_get_basetype(handle);
             BitWidth = spvc_type_get_bit_width(handle);
-            // Entry point not found
-            //VectorSize = spvc_type_get_vector_size(handle);
+            VectorSize = spvc_type_get_vector_size(handle);
             Columns = spvc_type_get_columns(handle);
             ArrayDimensions = spvc_type_get_num_array_dimensions(handle);
             MemberCount = spvc_type_get_num_member_types(handle);
